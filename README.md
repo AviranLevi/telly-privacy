@@ -1,7 +1,7 @@
 # Telly — public privacy policy
 
 The hosted privacy policy for **Telly**, served by GitHub Pages at
-<https://aviranlevi.github.io/telly-privacy/> and linked from the App Store listing.
+<https://lipsealed.app/> (the old aviranlevi.github.io/telly-privacy/ address redirects there) and linked from the App Store listing.
 
 This repo is public because Apple requires the policy to be reachable without
 authentication. It contains only `index.html` — nothing about the app itself.
