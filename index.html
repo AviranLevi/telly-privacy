@@ -3,159 +3,202 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lipsealed — Privacy Policy</title>
-<meta name="description" content="Privacy policy for Lipsealed (formerly Telly), a TV and film tracker with a spoiler-safe social layer.">
+<title>Lipsealed — Talk about shows without spoilers</title>
+<meta name="description" content="Track every episode and film, see what your friends think, and never read a word about episodes you haven't reached yet.">
+<link rel="canonical" href="https://lipsealed.app/">
+<link rel="icon" href="/assets/favicon.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta name="theme-color" content="#0B0B0F">
+<meta name="apple-itunes-app" content="app-id=6810344347">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://lipsealed.app/">
+<meta property="og:title" content="Lipsealed — Talk about shows without spoilers">
+<meta property="og:description" content="Track every episode and film, see what your friends think, and never read a word about episodes you haven't reached yet.">
+<meta property="og:image" content="https://lipsealed.app/assets/og.png">
+<meta property="og:image:width" content="1024">
+<meta property="og:image:height" content="500">
+<meta name="twitter:card" content="summary_large_image">
 <style>
+  /* The app's own tokens (src/theme.ts): dark only, posters carry the colour. */
   :root {
-    --bg: #ffffff;
-    --surface: #f6f7f9;
-    --text: #1a1c1f;
-    --muted: #5c6370;
-    --rule: #e3e6ea;
-    --accent: #c98a1a;
-    --link: #1c5fd0;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #121417;
-      --surface: #1b1e23;
-      --text: #e8eaed;
-      --muted: #9aa1ad;
-      --rule: #2a2e35;
-      --accent: #ffc94a;
-      --link: #79a9ff;
-    }
+    --bg: #0B0B0F;
+    --surface: #15151C;
+    --raised: #1E1E27;
+    --border: #2A2A35;
+    --text: #F2F2F5;
+    --muted: #9A9AA8;
+    --faint: #6B6B78;
+    --accent: #FFB454;
   }
   * { box-sizing: border-box; }
-  html { -webkit-text-size-adjust: 100%; }
+  html { -webkit-text-size-adjust: 100%; background: var(--bg); }
   body {
     margin: 0;
     background: var(--bg);
     color: var(--text);
-    font: 17px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font: 17px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
-  .wrap { max-width: 44rem; margin: 0 auto; padding: 3rem 1.25rem 5rem; }
-  header { border-bottom: 1px solid var(--rule); padding-bottom: 1.5rem; margin-bottom: 2rem; }
-  .brand { display: flex; align-items: center; gap: .6rem; }
-  .mark {
-    width: 34px; height: 34px; border-radius: 9px; flex: none;
-    background: var(--accent); color: #17191c;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 17px; line-height: 1;
+  a { color: inherit; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+  .wrap { max-width: 68rem; margin: 0 auto; padding: 0 1.25rem; }
+
+  /* Header */
+  .top { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 0; }
+  .brand { display: flex; align-items: center; gap: .6rem; text-decoration: none; font-weight: 650; font-size: 1.1rem; letter-spacing: -.01em; }
+  .brand img { width: 34px; height: 34px; border-radius: 9px; }
+  .top nav a { color: var(--muted); text-decoration: none; font-size: .95rem; }
+  .top nav a:hover { color: var(--text); }
+
+  /* Hero */
+  .hero { display: grid; grid-template-columns: 1.1fr .9fr; gap: 3rem; align-items: center; padding: 3.5rem 0 4.5rem; }
+  h1 { font-size: clamp(2.3rem, 5.2vw, 3.6rem); line-height: 1.05; letter-spacing: -.035em; margin: 0 0 1.1rem; }
+  h1 em { font-style: normal; color: var(--accent); }
+  .lede { color: var(--muted); font-size: 1.15rem; margin: 0 0 2rem; max-width: 32rem; }
+  .get { display: flex; flex-wrap: wrap; align-items: center; gap: .9rem; }
+  .get .appstore img { display: block; height: 52px; width: auto; }
+  .soon {
+    display: inline-flex; align-items: center; height: 52px; padding: 0 1.1rem;
+    border: 1px solid var(--border); border-radius: 12px; color: var(--muted); font-size: .92rem;
   }
-  h1 { font-size: 1.9rem; margin: 1.1rem 0 .35rem; letter-spacing: -.02em; }
-  .brand-name { font-size: 1.05rem; font-weight: 600; letter-spacing: -.01em; }
-  .updated { color: var(--muted); font-size: .92rem; margin: 0; }
-  .lede { color: var(--muted); margin: 1.1rem 0 0; }
-  h2 {
-    font-size: 1.2rem; letter-spacing: -.01em;
-    margin: 2.4rem 0 .75rem; padding-top: 1.4rem;
-    border-top: 1px solid var(--rule);
+  .note { color: var(--faint); font-size: .88rem; margin: 1.1rem 0 0; }
+
+  .phone {
+    width: 100%; max-width: 300px; justify-self: center;
+    border-radius: 34px; border: 1px solid var(--border);
+    box-shadow: 0 30px 80px -30px rgba(255, 180, 84, .25), 0 10px 40px rgba(0, 0, 0, .6);
+    display: block; height: auto;
   }
-  h2:first-of-type { border-top: 0; padding-top: 0; }
-  ul { padding-left: 1.15rem; margin: .75rem 0; }
-  li { margin: .6rem 0; }
-  li::marker { color: var(--muted); }
-  strong { font-weight: 600; }
-  a { color: var(--link); }
-  .contact {
-    margin-top: 2.5rem; padding: 1.1rem 1.25rem;
-    background: var(--surface); border-radius: 12px;
+
+  /* Features */
+  .feature { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; padding: 3rem 0; border-top: 1px solid var(--border); }
+  .feature:nth-of-type(even) .copy { order: 2; }
+  .feature .phone { max-width: 270px; }
+  h2 { font-size: clamp(1.6rem, 3vw, 2.1rem); letter-spacing: -.025em; line-height: 1.15; margin: 0 0 .9rem; }
+  .copy p { color: var(--muted); margin: 0; max-width: 30rem; }
+
+  .more { border-top: 1px solid var(--border); padding: 3.5rem 0; }
+  .more h2 { margin-bottom: 1.5rem; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+  .card { background: var(--surface); border-radius: 16px; padding: 1.25rem; }
+  .card h3 { font-size: 1.02rem; margin: 0 0 .4rem; letter-spacing: -.01em; }
+  .card p { color: var(--muted); font-size: .93rem; margin: 0; }
+  .tag { display: inline-block; font-size: .72rem; font-weight: 600; color: var(--accent); border: 1px solid rgba(255, 180, 84, .4); border-radius: 999px; padding: .05rem .5rem; margin-left: .3rem; vertical-align: 2px; }
+
+  .end { text-align: center; border-top: 1px solid var(--border); padding: 4rem 0; }
+  .end h2 { margin-bottom: 1.5rem; }
+  .end .get { justify-content: center; }
+
+  footer { border-top: 1px solid var(--border); padding: 2rem 0 3rem; color: var(--faint); font-size: .88rem; }
+  footer .links { display: flex; flex-wrap: wrap; gap: .4rem 1.4rem; margin-bottom: 1rem; }
+  footer .links a { color: var(--muted); text-decoration: none; }
+  footer .links a:hover { color: var(--text); }
+  footer p { margin: .3rem 0; }
+
+  @media (max-width: 860px) {
+    .hero, .feature { grid-template-columns: 1fr; gap: 2.25rem; }
+    .hero { padding-top: 2rem; text-align: left; }
+    .feature:nth-of-type(even) .copy { order: 0; }
+    .grid { grid-template-columns: 1fr 1fr; }
+    .phone, .feature .phone { max-width: 260px; }
   }
-  .contact p { margin: 0; }
-  footer { margin-top: 3rem; color: var(--muted); font-size: .88rem; }
+  @media (max-width: 520px) {
+    body { font-size: 16px; }
+    .grid { grid-template-columns: 1fr; }
+    .get .appstore img, .soon { height: 46px; }
+  }
 </style>
 </head>
 <body>
-<main class="wrap">
+<div class="wrap">
 
-  <header>
-    <div class="brand">
-      <span class="mark" aria-hidden="true">&#9654;</span>
-      <span class="brand-name">Lipsealed</span>
-    </div>
-    <h1>Privacy Policy</h1>
-    <p class="updated">Last updated: October 18, 2026</p>
-    <p class="lede">Lipsealed (formerly Telly) is a TV and film tracker with a spoiler-safe social layer. This policy
-      explains what we collect, why, and what you can do about it.</p>
+  <header class="top">
+    <a class="brand" href="/"><img src="/assets/icon-192.png" alt="" width="34" height="34">Lipsealed</a>
+    <nav><a href="/privacy-policy/">Privacy policy</a></nav>
   </header>
 
-  <h2>What we collect</h2>
-  <ul>
-    <li><strong>Account info</strong>: your email address, your handle, and anything optional you
-      add — display name, bio, avatar.</li>
-    <li><strong>Your activity</strong>: what you mark as watched, your ratings, tags, and comments,
-      who you follow, and the genres you pick when you set up the app.</li>
-    <li><strong>A push token</strong> — only if you turn on notifications. You can turn this off at
-      any time in Settings.</li>
-    <li><strong>Crash reports</strong> — when the app hits an error, we receive a diagnostic report:
-      the device model, the OS and app version, and an anonymous installation identifier. It doesn't
-      include your email, your account, or anything you've watched.</li>
-    <li><strong>Imported viewing history</strong> — only if you import a file from another service
-      (for example Netflix's viewing history download). The file is read on your phone and never
-      uploaded. The titles and dates in it are sent to our server only to find them in our catalog;
-      title names are looked up with TMDB, without anything that identifies you. Nothing from the file
-      is kept except the history you choose to import, which is stored like anything you mark as
-      watched, and you can undo an import in Settings.</li>
-  </ul>
-  <p>We don't collect anything beyond what's needed to run the app and fix it when it breaks.
-    There's no advertising, no ad tracking, and nothing here is used to profile you across other
-    apps or websites.</p>
+  <main>
+    <section class="hero">
+      <div>
+        <h1>Talk about shows without <em>spoilers.</em></h1>
+        <p class="lede">Track every episode and film, see what your friends think, and never read a word about episodes you haven't reached yet.</p>
+        <div class="get">
+          <a class="appstore" href="https://apps.apple.com/app/id6810344347">
+            <img src="https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/en-us" alt="Download on the App Store" height="52">
+          </a>
+          <span class="soon">Coming soon to Google Play</span>
+        </div>
+        <p class="note">Free. Lipsealed was called Telly until October 2026.</p>
+      </div>
+      <img class="phone" src="/assets/shots/feed.jpg" alt="The feed: a friend's comment on Ted Lasso S03E08 is shown, one that spoils later episodes is covered, and one from S03E09 is hidden because you're on S03E08." width="562" height="1000">
+    </section>
 
-  <h2>Why we collect it</h2>
-  <p>To run Lipsealed: tracking what you watch, keeping comments spoiler-safe against your own progress,
-    and sending the notifications you've opted into.</p>
+    <section class="feature">
+      <div class="copy">
+        <h2>Comments that know where you are</h2>
+        <p>Every comment, rating and reaction belongs to an episode. Anything from further ahead stays hidden until you've caught up. It isn't just blurred on your screen: it never leaves our server.</p>
+      </div>
+      <img class="phone" src="/assets/shots/comments.jpg" alt="An episode page with a star rating, reactions, and comments, one of them covered because it spoils later episodes." width="562" height="1000" loading="lazy">
+    </section>
 
-  <h2>Who we share it with</h2>
-  <ul>
-    <li><strong>Supabase</strong> — hosts our database, authentication, and backend. They process
-      data on our behalf; they don't use it for their own purposes.</li>
-    <li><strong>TMDB (The Movie Database)</strong> — supplies show/movie metadata and artwork. We
-      send search queries to look up titles; we don't send your personal data to them. This product
-      uses the TMDB API but is not endorsed or certified by TMDB.</li>
-    <li><strong>Apple / Google</strong> — only if you choose "Continue with Apple" or "Continue with
-      Google" to sign in.</li>
-    <li><strong>Push notification services (Apple/Google/Expo)</strong> — only if you enable
-      notifications, so we can deliver them.</li>
-    <li><strong>Sentry</strong> — receives the crash reports described above so faults can be
-      diagnosed. It's configured not to send personal information. As part of how the service works,
-      Sentry derives an approximate location (city and country) from the connecting IP address.</li>
-  </ul>
-  <p>We do not sell your data, and we do not share it with anyone else.</p>
+    <section class="feature">
+      <div class="copy">
+        <h2>Up Next, always up to date</h2>
+        <p>The next episode of every show in one list. New releases show up as they air, and shows you haven't touched in a while wait to one side.</p>
+      </div>
+      <img class="phone" src="/assets/shots/up-next.jpg" alt="Up Next listing the next episode of Ted Lasso, Reacher and Fargo." width="562" height="1000" loading="lazy">
+    </section>
 
-  <h2>Your rights</h2>
-  <ul>
-    <li><strong>Delete your account</strong>: any time, in-app, from Settings → Account → Delete
-      account. This permanently and immediately deletes your account and everything tied to it —
-      watch history, ratings, comments, follows. It cannot be undone. Without the app, you can
-      request deletion by email — see <a href="delete-account/">Delete your Lipsealed account</a>.</li>
-    <li><strong>Access your data</strong>: email
-      <a href="mailto:telly.app.support@gmail.com">telly.app.support@gmail.com</a> and we'll get you
-      a copy. There's no self-serve export yet, so this is handled by hand for now — we'll respond
-      promptly.</li>
-  </ul>
+    <section class="feature">
+      <div class="copy">
+        <h2>Everything about a show in one place</h2>
+        <p>Your progress, the cast, where it's streaming in your country, and how strict to be about spoilers for that one show.</p>
+      </div>
+      <img class="phone" src="/assets/shots/show.jpg" alt="The Ted Lasso page: 30 of 43 episodes watched, a Following button, spoiler and audio settings, and the cast." width="562" height="1000" loading="lazy">
+    </section>
 
-  <h2>How long we keep it</h2>
-  <p>For as long as your account is active. If you delete your account, your data is deleted
-    immediately along with it — nothing lingers.</p>
+    <section class="more">
+      <h2>And a few more things</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Swipe to mark watched</h3>
+          <p>One swipe on an episode, no menus.</p>
+        </div>
+        <div class="card">
+          <h3>For you</h3>
+          <p>Picks based on what you watch, love and rate.</p>
+        </div>
+        <div class="card">
+          <h3>Friends, your way</h3>
+          <p>Follow friends and see what they think, or keep your account private.</p>
+        </div>
+        <div class="card">
+          <h3>Bring your Netflix history <span class="tag">Next update</span></h3>
+          <p>Import everything you've watched, with the dates, and leave out what isn't yours.</p>
+        </div>
+      </div>
+    </section>
 
-  <h2>Children</h2>
-  <p>Lipsealed isn't directed at children under 13, and we don't knowingly collect data from anyone
-    under that age.</p>
-
-  <h2>Changes to this policy</h2>
-  <p>We may update this policy as the app changes. Material changes will be noted in-app or by
-    email.</p>
-
-  <div class="contact">
-    <p><strong>Questions, requests, or reports:</strong>
-      <a href="mailto:telly.app.support@gmail.com">telly.app.support@gmail.com</a></p>
-  </div>
+    <section class="end">
+      <h2>Spoiler-free TV starts here.</h2>
+      <div class="get">
+        <a class="appstore" href="https://apps.apple.com/app/id6810344347">
+          <img src="https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/en-us" alt="Download on the App Store" height="52" loading="lazy">
+        </a>
+        <span class="soon">Coming soon to Google Play</span>
+      </div>
+    </section>
+  </main>
 
   <footer>
-    <p>Lipsealed · This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
+    <div class="links">
+      <a href="/privacy-policy/">Privacy policy</a>
+      <a href="mailto:telly.app.support@gmail.com">Support</a>
+      <a href="/delete-account/">Delete account</a>
+    </div>
+    <p>© 2026 Aviran Levi</p>
+    <p>This product uses the TMDB API but is not endorsed or certified by TMDB. Streaming availability from JustWatch.</p>
   </footer>
 
-</main>
+</div>
 </body>
 </html>
