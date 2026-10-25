@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lipsealed — Talk about shows without spoilers</title>
-<meta name="description" content="Track every episode and film, see what your friends think, and never read a word about episodes you haven't reached yet.">
+<title>Lipsealed: talk about every episode without reading ahead</title>
+<meta name="description" content="Track what you watch and read what people said about each episode, only up to where you are. Comments from further ahead are never sent to your phone. Bring your TV Time or Netflix history.">
 <link rel="canonical" href="https://lipsealed.app/">
 <link rel="icon" href="/assets/favicon.png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
@@ -12,14 +12,27 @@
 <meta name="apple-itunes-app" content="app-id=6810344347">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://lipsealed.app/">
-<meta property="og:title" content="Lipsealed — Talk about shows without spoilers">
-<meta property="og:description" content="Track every episode and film, see what your friends think, and never read a word about episodes you haven't reached yet.">
+<meta property="og:title" content="Lipsealed: talk about every episode without reading ahead">
+<meta property="og:description" content="Comments from episodes you haven't watched are never sent to your phone. Free, no ads. Bring your TV Time history.">
 <meta property="og:image" content="https://lipsealed.app/assets/og.png">
 <meta property="og:image:width" content="1024">
 <meta property="og:image:height" content="500">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="/assets/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
 <style>
-  /* The app's own tokens (src/theme.ts): dark only, posters carry the colour. */
+  /* Archivo (SIL Open Font License), self-hosted: the variable latin subset,
+     every weight and width in one file, so no request leaves this site. */
+  @font-face {
+    font-family: "Archivo";
+    src: url("/assets/fonts/archivo-latin.woff2") format("woff2");
+    font-weight: 100 900;
+    font-stretch: 62% 125%;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  /* The app's own tokens (src/theme.ts). Archivo's width axis gives the
+     condensed black numerals that echo the app's Top 10. */
   :root {
     --bg: #0B0B0F;
     --surface: #15151C;
@@ -29,6 +42,9 @@
     --muted: #9A9AA8;
     --faint: #6B6B78;
     --accent: #FFB454;
+    --sealed: #1A1A22;
+    --sealed-text: #7C7C8A;
+    --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
   }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; background: var(--bg); }
@@ -36,56 +52,116 @@
     margin: 0;
     background: var(--bg);
     color: var(--text);
-    font: 17px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font: 17px/1.6 var(--display);
   }
   a { color: inherit; }
-  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
-  .wrap { max-width: 68rem; margin: 0 auto; padding: 0 1.25rem; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+  .wrap { max-width: 72rem; margin: 0 auto; padding: 0 1.25rem; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
   /* Header */
-  .top { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 0; }
-  .brand { display: flex; align-items: center; gap: .6rem; text-decoration: none; font-weight: 650; font-size: 1.1rem; letter-spacing: -.01em; }
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.25rem 0; }
+  .brand { display: flex; align-items: center; gap: .6rem; text-decoration: none; font-weight: 700; font-size: 1.15rem; }
   .brand img { width: 34px; height: 34px; border-radius: 9px; }
+  .top nav { display: flex; gap: 1.4rem; }
   .top nav a { color: var(--muted); text-decoration: none; font-size: .95rem; }
   .top nav a:hover { color: var(--text); }
+  .top nav .short { display: none; }
 
   /* Hero */
-  .hero { display: grid; grid-template-columns: 1.1fr .9fr; gap: 3rem; align-items: center; padding: 3.5rem 0 4.5rem; }
-  h1 { font-size: clamp(2.3rem, 5.2vw, 3.6rem); line-height: 1.05; letter-spacing: -.035em; margin: 0 0 1.1rem; }
-  h1 em { font-style: normal; color: var(--accent); }
-  .lede { color: var(--muted); font-size: 1.15rem; margin: 0 0 2rem; max-width: 32rem; }
+  .hero { display: grid; grid-template-columns: 1fr minmax(0, 30rem); gap: 3.5rem; align-items: center; padding: 3rem 0 5rem; }
+  h1 {
+    font-weight: 850;
+    font-stretch: 72%;
+    font-size: clamp(2.9rem, 6.6vw, 5.2rem);
+    line-height: .95;
+    letter-spacing: -.01em;
+    margin: 0 0 1.4rem;
+    max-width: 13ch;
+  }
+  .lede { color: var(--muted); font-size: 1.18rem; line-height: 1.55; margin: 0 0 2rem; max-width: 31rem; }
   .get { display: flex; flex-wrap: wrap; align-items: center; gap: .9rem; }
   .get .appstore img { display: block; height: 52px; width: auto; }
   .soon {
     display: inline-flex; align-items: center; height: 52px; padding: 0 1.1rem;
     border: 1px solid var(--border); border-radius: 12px; color: var(--muted); font-size: .92rem;
   }
-  .note { color: var(--faint); font-size: .88rem; margin: 1.1rem 0 0; }
+  .note { color: var(--faint); font-size: .9rem; margin: 1.1rem 0 0; }
 
-  .phone {
-    width: 100%; max-width: 300px; justify-self: center;
-    border-radius: 34px; border: 1px solid var(--border);
-    box-shadow: 0 30px 80px -30px rgba(255, 180, 84, .25), 0 10px 40px rgba(0, 0, 0, .6);
-    display: block; height: auto;
+  /* The demo: pick how far you've watched; later episodes' comments seal. */
+  .demo { background: var(--surface); border: 1px solid var(--border); border-radius: 22px; padding: 1.4rem 1.4rem 1.2rem; }
+  .demo-show { font-weight: 700; font-size: 1.05rem; }
+  .demo-show span { color: var(--faint); font-weight: 400; }
+  .demo-where { color: var(--muted); font-size: .9rem; margin: .35rem 0 0; }
+  .demo-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+  /* The episode you're on, big and outlined, like the app's Top 10. */
+  .big {
+    font-weight: 900; font-stretch: 62%; font-size: 5.6rem; line-height: .78; margin: -.1rem -.15rem 0 0;
+    color: transparent; -webkit-text-stroke: 1.5px var(--accent);
+    user-select: none;
+  }
+  .eps { display: grid; grid-template-columns: repeat(8, 1fr); gap: .35rem; border: 0; margin: 1rem 0 1.1rem; padding: 0; }
+  .eps input { position: absolute; opacity: 0; pointer-events: none; }
+  .eps label {
+    display: grid; place-items: center; height: 44px; border-radius: 10px; cursor: pointer;
+    background: var(--raised); color: var(--muted);
+    font-weight: 800; font-stretch: 70%; font-size: 1.05rem;
+    transition: background .15s, color .15s;
+  }
+  .eps label:hover { color: var(--text); }
+  .eps input:checked + label { background: var(--accent); color: #1A1206; }
+  .eps input:focus-visible + label { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .thread { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; }
+  .c { background: var(--raised); border-radius: 14px; padding: .7rem .85rem; }
+  .c-head { display: flex; justify-content: space-between; gap: .75rem; font-size: .82rem; }
+  .c-who { font-weight: 700; }
+  .c-ep { color: var(--faint); font-stretch: 75%; font-weight: 700; }
+  .c-body { margin: .2rem 0 0; font-size: .97rem; line-height: 1.4; }
+  .c.is-sealed { background: var(--sealed); }
+  .c.is-sealed .c-who { color: var(--sealed-text); }
+  .c.is-sealed .c-body { color: var(--sealed-text); font-size: .9rem; display: flex; align-items: center; gap: .45rem; }
+  .c.is-sealed .c-body svg { flex: none; }
+  .demo-foot { color: var(--faint); font-size: .84rem; margin: .95rem 0 0; }
+  @media (prefers-reduced-motion: no-preference) {
+    .c.just-changed { animation: settle .35s ease-out; }
+    @keyframes settle { from { transform: translateY(3px); opacity: .55; } to { transform: none; opacity: 1; } }
   }
 
-  /* Features */
-  .feature { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; padding: 3rem 0; border-top: 1px solid var(--border); }
-  .feature:nth-of-type(even) .copy { order: 2; }
-  .feature .phone { max-width: 270px; }
-  h2 { font-size: clamp(1.6rem, 3vw, 2.1rem); letter-spacing: -.025em; line-height: 1.15; margin: 0 0 .9rem; }
-  .copy p { color: var(--muted); margin: 0; max-width: 30rem; }
+  /* Sections */
+  section.band { border-top: 1px solid var(--border); padding: 4.5rem 0; }
+  h2 { font-weight: 850; font-stretch: 75%; font-size: clamp(2rem, 4.2vw, 3rem); line-height: 1; letter-spacing: -.005em; margin: 0 0 1rem; }
+  .intro { color: var(--muted); font-size: 1.08rem; max-width: 36rem; margin: 0 0 2.5rem; }
 
-  .more { border-top: 1px solid var(--border); padding: 3.5rem 0; }
-  .more h2 { margin-bottom: 1.5rem; }
-  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
-  .card { background: var(--surface); border-radius: 16px; padding: 1.25rem; }
-  .card h3 { font-size: 1.02rem; margin: 0 0 .4rem; letter-spacing: -.01em; }
-  .card p { color: var(--muted); font-size: .93rem; margin: 0; }
-  .tag { display: inline-block; font-size: .72rem; font-weight: 600; line-height: 1.5; color: var(--accent); border: 1px solid rgba(255, 180, 84, .4); border-radius: 999px; padding: .05rem .55rem; margin-bottom: .55rem; }
+  /* Real screens, in a strip that scrolls sideways on small screens. */
+  .screens { display: grid; grid-auto-flow: column; grid-auto-columns: 300px; gap: 1.6rem; overflow-x: auto; padding-bottom: .5rem; scroll-snap-type: x mandatory; }
+  .screens figure { margin: 0; scroll-snap-align: start; }
+  .screens img { width: 100%; height: auto; aspect-ratio: 660 / 1434; object-fit: cover; display: block; border-radius: 26px; border: 1px solid var(--border); background: var(--surface); }
+  .screens figcaption { margin-top: .9rem; }
+  .screens figcaption b { display: block; font-weight: 700; font-size: 1.02rem; }
+  .screens figcaption span { color: var(--muted); font-size: .92rem; line-height: 1.45; }
 
-  .end { text-align: center; border-top: 1px solid var(--border); padding: 4rem 0; }
-  .end h2 { margin-bottom: 1.5rem; }
+  /* Coming from TV Time: three real steps, numbered like the Top 10. */
+  .move { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 3.5rem; align-items: start; }
+  .steps { list-style: none; margin: 0; padding: 0; counter-reset: step; display: grid; gap: 1.4rem; }
+  .steps li { counter-increment: step; display: grid; grid-template-columns: 3rem 1fr; gap: .9rem; align-items: start; }
+  .steps li::before {
+    content: counter(step);
+    font-weight: 900; font-stretch: 62%; font-size: 3.2rem; line-height: .85;
+    color: transparent; -webkit-text-stroke: 1.5px var(--accent);
+  }
+  .steps b { display: block; font-weight: 700; font-size: 1.05rem; }
+  .steps span { color: var(--muted); font-size: .97rem; }
+  .move .aside { color: var(--muted); font-size: .97rem; border-left: 2px solid var(--accent); padding: .2rem 0 .2rem 1.1rem; margin: 2rem 0 0; }
+
+  /* Everything else, as a plain list. */
+  .rest { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem 3rem; margin: 0; }
+  .rest dt { font-weight: 700; font-size: 1.05rem; margin-bottom: .3rem; }
+  .rest dd { margin: 0; color: var(--muted); font-size: .95rem; line-height: 1.5; }
+
+  .end { text-align: center; }
+  .end h2 { font-size: clamp(2.4rem, 5.5vw, 4rem); }
+  .end p { color: var(--muted); margin: 0 auto 2rem; max-width: 30rem; }
   .end .get { justify-content: center; }
 
   footer { border-top: 1px solid var(--border); padding: 2rem 0 3rem; color: var(--faint); font-size: .88rem; }
@@ -94,17 +170,23 @@
   footer .links a:hover { color: var(--text); }
   footer p { margin: .3rem 0; }
 
-  @media (max-width: 860px) {
-    .hero, .feature { grid-template-columns: 1fr; gap: 2.25rem; }
-    .hero { padding-top: 2rem; text-align: left; }
-    .feature:nth-of-type(even) .copy { order: 0; }
-    .grid { grid-template-columns: 1fr 1fr; }
-    .phone, .feature .phone { max-width: 260px; }
+  @media (max-width: 900px) {
+    .hero, .move { grid-template-columns: 1fr; gap: 2.5rem; }
+    .hero { padding-top: 1.5rem; }
+    .rest { grid-template-columns: 1fr 1fr; }
+    .screens { grid-auto-columns: 42%; }
   }
-  @media (max-width: 520px) {
+  @media (max-width: 560px) {
     body { font-size: 16px; }
-    .grid { grid-template-columns: 1fr; }
+    .top nav .optional { display: none; }
+    .top nav .short { display: inline; }
+    .rest { grid-template-columns: 1fr; }
+    .demo { padding: 1.1rem 1rem 1rem; }
+    .eps { gap: .25rem; }
+    .eps label { font-size: .95rem; }
+    .big { font-size: 4.6rem; }
     .get .appstore img, .soon { height: 46px; }
+    .screens { grid-auto-columns: 70%; }
   }
 </style>
 </head>
@@ -113,74 +195,97 @@
 
   <header class="top">
     <a class="brand" href="/"><img src="/assets/icon-192.png" alt="" width="34" height="34">Lipsealed</a>
-    <nav><a href="/privacy-policy/">Privacy policy</a></nav>
+    <nav>
+      <a href="#tv-time"><span class="optional">Coming f</span><span class="short">F</span>rom TV Time</a>
+      <a class="optional" href="/privacy-policy/">Privacy</a>
+    </nav>
   </header>
 
   <main>
     <section class="hero">
       <div>
-        <h1>Talk about shows without <em>spoilers.</em></h1>
-        <p class="lede">Track every episode and film, see what your friends think, and never read a word about episodes you haven't reached yet.</p>
+        <h1>Talk about every episode without reading ahead.</h1>
+        <p class="lede">Lipsealed tracks what you watch and shows you what people said about each episode, up to where you are. Comments from further ahead aren’t blurred. They’re never sent to your phone.</p>
         <div class="get">
           <a class="appstore" href="https://apps.apple.com/app/id6810344347">
             <img src="https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/en-us" alt="Download on the App Store" height="52">
           </a>
           <span class="soon">Coming soon to Google Play</span>
         </div>
-        <p class="note">Free. Lipsealed was called Telly until October 2026.</p>
+        <p class="note">Free, with no ads. Lipsealed was called Telly until October 2026.</p>
       </div>
-      <img class="phone" src="/assets/shots/feed.jpg" alt="The feed: a friend's comment on Ted Lasso S03E08 is shown, one that spoils later episodes is covered, and one from S03E09 is hidden because you're on S03E08." width="562" height="1000">
-    </section>
 
-    <section class="feature">
-      <div class="copy">
-        <h2>Comments that know where you are</h2>
-        <p>Every comment, rating and reaction belongs to an episode. Anything from further ahead stays hidden until you've caught up. It isn't just blurred on your screen: it never leaves our server.</p>
-      </div>
-      <img class="phone" src="/assets/shots/comments.jpg" alt="An episode page with a star rating, reactions, and comments, one of them covered because it spoils later episodes." width="562" height="1000" loading="lazy">
-    </section>
-
-    <section class="feature">
-      <div class="copy">
-        <h2>Up Next, always up to date</h2>
-        <p>The next episode of every show in one list. New releases show up as they air, and shows you haven't touched in a while wait to one side.</p>
-      </div>
-      <img class="phone" src="/assets/shots/up-next.jpg" alt="Up Next listing the next episode of Ted Lasso, Reacher and Fargo." width="562" height="1000" loading="lazy">
-    </section>
-
-    <section class="feature">
-      <div class="copy">
-        <h2>Everything about a show in one place</h2>
-        <p>Your progress, the cast, where it's streaming in your country, and how strict to be about spoilers for that one show.</p>
-      </div>
-      <img class="phone" src="/assets/shots/show.jpg" alt="The Ted Lasso page: 30 of 43 episodes watched, a Following button, spoiler and audio settings, and the cast." width="562" height="1000" loading="lazy">
-    </section>
-
-    <section class="more">
-      <h2>And a few more things</h2>
-      <div class="grid">
-        <div class="card">
-          <h3>Swipe to mark watched</h3>
-          <p>One swipe on an episode, no menus.</p>
+      <div class="demo" aria-labelledby="demo-title">
+        <div class="demo-top">
+          <div>
+            <div class="demo-show" id="demo-title">The Quiet Coast <span>season 1</span></div>
+            <p class="demo-where" id="where-label">Try it: you’ve watched up to episode</p>
+          </div>
+          <div class="big" aria-hidden="true" id="big">4</div>
         </div>
-        <div class="card">
-          <h3>For you</h3>
-          <p>Picks based on what you watch, love and rate.</p>
-        </div>
-        <div class="card">
-          <h3>Friends, your way</h3>
-          <p>Follow friends and see what they think, or keep your account private.</p>
-        </div>
-        <div class="card">
-          <span class="tag">New</span>
-          <h3>Bring your Netflix history</h3>
-          <p>Import everything you've watched, with the dates, and leave out what isn't yours.</p>
-        </div>
+        <fieldset class="eps" aria-labelledby="where-label"></fieldset>
+        <ul class="thread" id="thread" aria-live="polite"></ul>
+        <p class="demo-foot">A made-up show. In the app, sealed comments don’t reach your phone at all.</p>
       </div>
     </section>
 
-    <section class="end">
-      <h2>Spoiler-free TV starts here.</h2>
+    <section class="band" aria-labelledby="inside">
+      <h2 id="inside">Inside the app</h2>
+      <p class="intro">Your shows, your friends, and what everyone thought, one episode at a time.</p>
+      <div class="screens">
+        <figure>
+          <img src="/assets/shots/episode.jpg" alt="An episode page: your rating next to the average, how it felt, and comments with emoji reactions, one of them covered because it spoils later episodes." width="660" height="1434" loading="lazy">
+          <figcaption><b>Every episode has its own conversation</b><span>Rate it, say how it felt, reply to people and react with emoji.</span></figcaption>
+        </figure>
+        <figure>
+          <img src="/assets/shots/feed.jpg" alt="The feed: friends' comments with reactions, and one hidden because you haven't reached that episode." width="660" height="1434" loading="lazy">
+          <figcaption><b>Your friends, as far as you’ve watched</b><span>React to what they said right from the feed. Anything ahead of you waits.</span></figcaption>
+        </figure>
+        <figure>
+          <img src="/assets/shots/discover.jpg" alt="Discover: picks based on your shows, then this week's top 10 series and films with large outlined numbers." width="660" height="1434" loading="lazy">
+          <figcaption><b>What everyone’s watching</b><span>The week’s top 10, genres, and picks based on what you love.</span></figcaption>
+        </figure>
+        <figure>
+          <img src="/assets/shots/up-next.jpg" alt="Up Next: the next episode of each show you're watching." width="660" height="1434" loading="lazy">
+          <figcaption><b>Up Next</b><span>The next episode of every show, and new ones as they air.</span></figcaption>
+        </figure>
+        <figure>
+          <img src="/assets/shots/profile.jpg" alt="A profile: time watched, a monthly chart and top genres." width="660" height="1434" loading="lazy">
+          <figcaption><b>Your year in TV</b><span>Time watched, your busiest months and your favorite genres.</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="band" id="tv-time" aria-labelledby="tv-time-title">
+      <div class="move">
+        <div>
+          <h2 id="tv-time-title">Coming from TV Time?</h2>
+          <p class="intro">If you saved your data before TV Time closed in July, your history isn’t lost. Bring your shows, every episode you watched and your films, with the dates you watched them.</p>
+          <p class="aside">The file is read on your phone. Only titles, episode numbers and dates are sent, to find them. Netflix viewing history works the same way.</p>
+        </div>
+        <ol class="steps">
+          <li><div><b>Choose the export you saved</b><span>The .zip works as it is, or pick the files inside it.</span></div></li>
+          <li><div><b>Check what was found</b><span>Untick anything that isn’t yours, like a shared profile’s shows.</span></div></li>
+          <li><div><b>Import</b><span>Your library, progress and Up Next fill in. Changed your mind? Undo the whole import in Settings.</span></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="band" aria-labelledby="also">
+      <h2 id="also">Also in the app</h2>
+      <dl class="rest">
+        <div><dt>Spoiler mode, per show</dt><dd>Strict hides that later episodes exist at all. Off shows everything, for a rewatch.</dd></div>
+        <div><dt>Mark a later twist</dt><dd>Writing about something that happens further on? Flag it, and it stays covered even for people on that episode.</dd></div>
+        <div><dt>Where to watch</dt><dd>Which services have it in your country, with data from JustWatch.</dd></div>
+        <div><dt>Swipe to mark watched</dt><dd>One swipe in Up Next. No menus.</dd></div>
+        <div><dt>Replies when they happen</dt><dd>A notification when someone answers you. Reactions come in one daily summary.</dd></div>
+        <div><dt>Private if you like</dt><dd>Only people you approve see your library. Your comments stay on the episode pages either way.</dd></div>
+      </dl>
+    </section>
+
+    <section class="band end" aria-labelledby="get">
+      <h2 id="get">Watch at your own pace.</h2>
+      <p>Free, with no ads. Delete your account and everything in it whenever you want.</p>
       <div class="get">
         <a class="appstore" href="https://apps.apple.com/app/id6810344347">
           <img src="https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/en-us" alt="Download on the App Store" height="52" loading="lazy">
@@ -201,5 +306,51 @@
   </footer>
 
 </div>
+
+<script>
+  // The demo: comments from episodes after the one picked are sealed. Their
+  // words are only written into the page once you've "watched" that far.
+  (function () {
+    var comments = [
+      { ep: 1, who: '@maya', text: 'The opening shot alone. I’m in.' },
+      { ep: 2, who: '@omar', text: 'The radio scene got me more than it should have.' },
+      { ep: 3, who: '@lena', text: 'Okay, that ending. I need a minute.' },
+      { ep: 5, who: '@sam', text: 'So the keeper knew the whole time?!' },
+      { ep: 6, who: '@nina', text: 'Mara at the lighthouse. Did not see that coming.' },
+      { ep: 8, who: '@omar', text: 'That last shot of the coast. Perfect finale.' },
+    ];
+    var lock = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
+    var eps = document.querySelector('.eps');
+    var thread = document.getElementById('thread');
+    var big = document.getElementById('big');
+    var current = 4;
+
+    var html = '<legend class="sr-only">How far you’ve watched</legend>';
+    for (var i = 1; i <= 8; i++) {
+      html += '<input type="radio" name="ep" id="ep' + i + '" value="' + i + '"' + (i === current ? ' checked' : '') + '>' +
+        '<label for="ep' + i + '"><span class="sr-only">Episode </span>' + i + '</label>';
+    }
+    eps.innerHTML = html;
+
+    function render(previous) {
+      big.textContent = current;
+      thread.innerHTML = comments.map(function (c) {
+        var sealed = c.ep > current;
+        var changed = previous !== undefined && (c.ep > previous) !== sealed;
+        var cls = 'c' + (sealed ? ' is-sealed' : '') + (changed ? ' just-changed' : '');
+        var body = sealed ? lock + 'Sealed until you’ve watched episode ' + c.ep : c.text;
+        return '<li class="' + cls + '"><div class="c-head"><span class="c-who">' + c.who +
+          '</span><span class="c-ep">E' + c.ep + '</span></div><p class="c-body">' + body + '</p></li>';
+      }).join('');
+    }
+
+    eps.addEventListener('change', function (e) {
+      var previous = current;
+      current = Number(e.target.value);
+      render(previous);
+    });
+    render();
+  })();
+</script>
 </body>
 </html>
