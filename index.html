@@ -141,6 +141,31 @@
   .screens figcaption b { display: block; font-weight: 700; font-size: 1.02rem; }
   .screens figcaption span { color: var(--muted); font-size: .92rem; line-height: 1.45; }
 
+  /* No scrollbar (it looked like a form control under the shots). The edge
+     that has more behind it fades out instead, and on a mouse two arrows
+     move a screen at a time. The script sets can-left / can-right. */
+  .strip { position: relative; }
+  .screens { scrollbar-width: none; --fade-l: 0px; --fade-r: 0px;
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent 100%); }
+  .screens::-webkit-scrollbar { display: none; }
+  .strip.can-left .screens { --fade-l: 56px; }
+  .strip.can-right .screens { --fade-r: 96px; }
+  .strip-nav { display: none; }
+  @media (hover: hover) and (pointer: fine) {
+    .strip-nav {
+      display: grid; place-items: center; position: absolute; top: 43%; transform: translateY(-50%);
+      width: 48px; height: 48px; border-radius: 50%; border: 1px solid var(--border);
+      background: var(--raised); color: var(--text); cursor: pointer;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, .45);
+      opacity: 0; pointer-events: none; transition: opacity .2s, background .2s;
+    }
+    .strip-nav:hover { background: var(--border); }
+    .strip-nav.prev { left: 10px; }
+    .strip-nav.next { right: 10px; }
+    .strip.can-left .strip-nav.prev, .strip.can-right .strip-nav.next { opacity: 1; pointer-events: auto; }
+  }
+
   /* Coming from TV Time: three real steps, numbered like the Top 10. */
   .move { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 3.5rem; align-items: start; }
   .steps { list-style: none; margin: 0; padding: 0; counter-reset: step; display: grid; gap: 1.4rem; }
@@ -232,7 +257,8 @@
     <section class="band" aria-labelledby="inside">
       <h2 id="inside">Inside the app</h2>
       <p class="intro">Your shows, your friends, and what everyone thought, one episode at a time.</p>
-      <div class="screens">
+      <div class="strip">
+      <div class="screens" id="screens" role="region" aria-label="Screens from the app" tabindex="0">
         <figure>
           <img src="/assets/shots/episode.jpg" alt="An episode page: your rating next to the average, how it felt, and comments with emoji reactions, one of them covered because it spoils later episodes." width="660" height="1434" loading="lazy">
           <figcaption><b>Every episode has its own conversation</b><span>Rate it, say how it felt, reply to people and react with emoji.</span></figcaption>
@@ -253,6 +279,9 @@
           <img src="/assets/shots/profile.jpg" alt="A profile: time watched, a monthly chart and top genres." width="660" height="1434" loading="lazy">
           <figcaption><b>Your year in TV</b><span>Time watched, your busiest months and your favorite genres.</span></figcaption>
         </figure>
+      </div>
+      <button class="strip-nav prev" type="button" aria-controls="screens" aria-label="Previous screen"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <button class="strip-nav next" type="button" aria-controls="screens" aria-label="Next screen"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
     </section>
 
@@ -350,6 +379,34 @@
       render(previous);
     });
     render();
+  })();
+
+  // The screens strip: say which edges have more behind them (for the fades
+  // and the arrows), and move one screen per arrow press.
+  (function () {
+    var strip = document.querySelector('.strip');
+    var screens = document.getElementById('screens');
+    var still = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    function update() {
+      var end = screens.scrollWidth - screens.clientWidth;
+      strip.classList.toggle('can-left', screens.scrollLeft > 4);
+      strip.classList.toggle('can-right', screens.scrollLeft < end - 4);
+    }
+
+    function step(direction) {
+      var card = screens.querySelector('figure');
+      var gap = parseFloat(getComputedStyle(screens).columnGap) || 0;
+      screens.scrollBy({ left: direction * (card.offsetWidth + gap), behavior: still.matches ? 'auto' : 'smooth' });
+    }
+
+    strip.querySelector('.prev').addEventListener('click', function () { step(-1); });
+    strip.querySelector('.next').addEventListener('click', function () { step(1); });
+    screens.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    // Images load lazily and change the strip's width as they arrive.
+    screens.querySelectorAll('img').forEach(function (img) { img.addEventListener('load', update); });
+    update();
   })();
 </script>
 </body>
